@@ -9,7 +9,8 @@ from dailyfresh import settings
 # django.setup()
 
 # redis
-BROKER_IP_PORT_NUM = "127.0.0.1:6379/数据库index"
+# BROKER_IP_PORT_NUM = "127.0.0.1:6379/数据库index"
+BROKER_IP_PORT_NUM = ""
 celery = Celery("celery_tasks.tasks", broker="redis://%s" % BROKER_IP_PORT_NUM)
 
 
