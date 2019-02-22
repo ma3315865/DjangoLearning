@@ -5,9 +5,9 @@ from itsdangerous import SignatureExpired
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
-from django.core.mail import send_mail
 
 from apps.user.models import User
+from celery_tasks.tasks import send_email_celery
 from dailyfresh import settings
 
 # Create your views here.
@@ -48,28 +48,19 @@ class RegisterView(View):
         if user:
             return render(request, "register.html", {"error_msg": "用户名已存在"})
 
+        # 创建用户
         user = User.objects.create_user(
             username, email=email, password=password)
         user.is_active = False
         user.save()
 
+        # 给用户info加密token
         ser = Serializer(settings.SECRET_KEY, 3600)
         info = {"user_id": user.id}
         token = ser.dumps(info).decode("utf8")
 
-        subject = "这里是正题"
-        message = "邮箱注册链接"
-        html_message = "<h1>点击下方链接注册</h1><br/>" \
-            "<a href='http://127.0.0.1:8000/user/active/%s'>" \
-            "http://127.0.0.1:8000/user/active/%s<a>" % (token, token)
-        from_email = settings.EMAIL_FROM
-        recipient_list = [email]
-        send_mail(
-            subject,
-            message,
-            from_email,
-            recipient_list,
-            html_message=html_message)
+        # 异步发送邮件
+        send_email_celery.delay(email, token)
 
         return redirect(reverse("goods:index"))
 
