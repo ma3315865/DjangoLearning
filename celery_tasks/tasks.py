@@ -10,11 +10,12 @@ from dailyfresh import settings
 
 # redis
 # BROKER_IP_PORT_NUM = "127.0.0.1:6379/数据库index"
-BROKER_IP_PORT_NUM = ""
-celery = Celery("celery_tasks.tasks", broker="redis://%s" % BROKER_IP_PORT_NUM)
+
+BROKER_IP_PORT_NUM = settings.BROKER_IP_PORT_NUM
+cel = Celery("celery_tasks.tasks", broker="redis://%s" % BROKER_IP_PORT_NUM)
 
 
-@celery.tasks
+@cel.task
 def send_email_celery(email, token):
     subject = "这里是正题"
     message = "邮箱注册链接"

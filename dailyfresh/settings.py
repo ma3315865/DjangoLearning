@@ -150,3 +150,33 @@ EMAIL_HOST_USER = '361162038@qq.com'
 EMAIL_HOST_PASSWORD = 'xmgnfswhekcqbgga'
 # 收件人看到的发件人
 EMAIL_FROM = 'DailyFreshTest<361162038@qq.com>'
+
+# redis缓存配置
+# 详情https://django-redis-chs.readthedocs.io/zh_CN/latest/
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+# 配置未登陆默认跳转页面
+LOGIN_URL = "/user/login"  # account/login
+
+# 配置django默认存储类
+DEFAULT_FILE_STORAGE = "utils.fastdfs.storage.FDFSStorage"
+
+# 配置Nginx的地址
+NGINX_URL = "http://192.168.161.129:8888/"
+
+# 配置client.conf的地址
+CLIENT_PATH = "./utils/fastdfs/client.conf"
+
+# celery的broker地址
+BROKER_IP_PORT_NUM = "192.168.161.129:6379/0"
